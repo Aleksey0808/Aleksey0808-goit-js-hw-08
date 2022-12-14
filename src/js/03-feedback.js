@@ -1,57 +1,42 @@
 import throttle from 'lodash.throttle';
 
-const refs = {
-  form: document.querySelector('.feedback-form'),
-  email: document.querySelector('.feedback-form [name="email"]'),
-  message: document.querySelector('.feedback-form [name="message"]'),
-};
+const form = document.querySelector('.feedback-form');
+const email = document.querySelector('input[name="email"]');
+const message = document.querySelector('textarea[name="message"]');
 
-const SUBMITTING_FORM = "feedback-form-state";
+const FEEDBACK_FORM = 'feedback-form-state';
 
-refs.form.addEventListener('submit', throttle(onFormSubmit, 500));
-
-refs.form.addEventListener('input', e => {
-  const saveObject = {email: e.target.value, message: e.target.value};
-  console.log(e.target.name);
-  console.log(e.target.value);
-  localStorage.setItem(SUBMITTING_FORM, JSON.stringify(saveObject))
-});
+form.addEventListener('submit', onFormSubmit);
+form.addEventListener('input', throttle(onTextareaInput, 500));
 
 populateTextarea();
 
-function onFormSubmit(evt) {
-  evt.preventDefault();
-
-  console.log('Отправляем форму');
-  evt.currentTarget.reset();
-  localStorage.removeItem(SUBMITTING_FORM);
+function onTextareaInput(e) {
+  const objectSave = { email: email.value, message: message.value };
+  localStorage.setItem(FEEDBACK_FORM, JSON.stringify(objectSave));
 }
 
-// function onTextareaInput(evt) {
+function onFormSubmit(evt) {
+  evt.preventDefault();
+  console.log({ email: email.value, message: message.value });
+  form.reset();
+  localStorage.removeItem(FEEDBACK_FORM);
+}
 
-//   const message = evt.target.value;
-
-//   localStorage.setItem(SUBMITTING_FORM, message);
-// }
-
-function populateTextarea() {
-  const savedMessage = localStorage.getItem(SUBMITTING_FORM);
-
-  if (savedMessage) {
-    refs.email.value = savedMessage;
+function load(key) {
+  try {
+    const serializedState = localStorage.getItem(key);
+    return serializedState === null ? undefined : JSON.parse(serializedState);
+  } catch (error) {
+    console.error('Get state error: ', error.message);
   }
 }
 
-// Домой
-// сделать так чтобы сохраняло не только сообщение но и имя, и все в одном обьекте
+function populateTextarea() {
+  const storageData = load(FEEDBACK_FORM);
 
-// const formData = {};
-
-// refs.form.addEventListener('input', e => {
-//   // console.log(e.target.name);
-//   // console.log(e.target.value);
-
-//   formData[e.target.name] = e.target.value;
-
-//   console.log(formData);
-// });
+  if (storageData) {
+    email.value = storageData.email;
+    message.value = storageData.message;
+  }
+}
