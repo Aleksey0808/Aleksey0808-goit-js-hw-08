@@ -12,8 +12,6 @@ form.addEventListener('input', throttle(onTextareaInput, 500));
 populateTextarea();
 
 function onTextareaInput(e) {
-  console.log(e.target.name)
-  console.log({ email: email.value, message: message.value })
   const objectSave = { email: email.value, message: message.value };
   localStorage.setItem(FEEDBACK_FORM, JSON.stringify(objectSave));
 }
@@ -28,7 +26,9 @@ function onFormSubmit(evt) {
 function load(key) {
   try {
     const validationsForForm = localStorage.getItem(key);
-    return validationsForForm === null ? undefined : JSON.parse(validationsForForm);
+    return validationsForForm === null
+      ? undefined
+      : JSON.parse(validationsForForm);
   } catch (error) {
     console.error('Error: ', error.name);
   }
