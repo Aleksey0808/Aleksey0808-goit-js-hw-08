@@ -12,6 +12,8 @@ form.addEventListener('input', throttle(onTextareaInput, 500));
 populateTextarea();
 
 function onTextareaInput(e) {
+  console.log(e.target.name)
+  console.log({ email: email.value, message: message.value })
   const objectSave = { email: email.value, message: message.value };
   localStorage.setItem(FEEDBACK_FORM, JSON.stringify(objectSave));
 }
@@ -25,10 +27,10 @@ function onFormSubmit(evt) {
 
 function load(key) {
   try {
-    const serializedState = localStorage.getItem(key);
-    return serializedState === null ? undefined : JSON.parse(serializedState);
+    const validationsForForm = localStorage.getItem(key);
+    return validationsForForm === null ? undefined : JSON.parse(validationsForForm);
   } catch (error) {
-    console.error('Get state error: ', error.message);
+    console.error('Error: ', error.name);
   }
 }
 
