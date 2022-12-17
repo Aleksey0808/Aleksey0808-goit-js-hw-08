@@ -11,14 +11,16 @@ form.addEventListener('input', throttle(onTextareaInput, 500));
 
 populateTextarea();
 
+let objectSave = {};
+
 function onTextareaInput(e) {
-  const objectSave = { email: email.value, message: message.value };
+  objectSave[e.target.name] = e.target.value;
   localStorage.setItem(FEEDBACK_FORM, JSON.stringify(objectSave));
 }
 
 function onFormSubmit(evt) {
   evt.preventDefault();
-  console.log({ email: email.value, message: message.value });
+  console.log(objectSave);
   form.reset();
   localStorage.removeItem(FEEDBACK_FORM);
 }
@@ -38,7 +40,8 @@ function populateTextarea() {
   const storageData = load(FEEDBACK_FORM);
 
   if (storageData) {
-    email.value = storageData.email;
-    message.value = storageData.message;
+    Object.entries(storageData).forEach(([name, value]) => {
+      form.elements[name].value = value;
+    });
   }
 }
